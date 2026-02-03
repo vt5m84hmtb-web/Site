@@ -1,0 +1,1120 @@
+﻿
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>SATO IA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .header {
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      text-align: center;
+    }
+
+    .logo {
+      margin: 0 auto;
+    }
+
+    .nav {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .nav a {
+      margin-left: 0;
+    }
+
+    .hero.hero-chat {
+      padding: 120px 20px 90px;
+    }
+
+    .hero.hero-chat h1 {
+      font-size: 56px;
+      letter-spacing: -1px;
+    }
+
+    .hero.hero-chat .subtitle {
+      margin: 16px auto 28px;
+      max-width: 720px;
+    }
+
+    .chat-shell {
+      max-width: 980px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+    }
+
+    .chat-box {
+      height: 420px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(0, 0, 0, 0.45);
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 78%;
+      padding: 12px 14px 22px;
+      border-radius: 12px;
+      line-height: 1.4;
+      font-size: 14px;
+      position: relative;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .message .time {
+      position: absolute;
+      left: 10px;
+      bottom: 6px;
+      font-size: 10px;
+      opacity: 0.6;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
+      animation: bubbleInRight 0.22s ease;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      animation: bubbleInLeft 0.22s ease;
+    }
+
+    .typing {
+      opacity: 0.7;
+      font-style: italic;
+    }
+
+    .input-area {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 10px;
+    }
+
+    .input-area input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      outline: none;
+    }
+
+    .send-btn {
+      background: #fff;
+      color: #000;
+      border-radius: 8px;
+      border: none;
+      padding: 12px 18px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .clear-btn {
+      background: transparent;
+      color: #fff;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 12px 16px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .chips {
+      margin-top: 14px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .chip {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .chip:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes bubbleInRight {
+      from { opacity: 0; transform: translateX(14px) scale(0.98); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    @keyframes bubbleInLeft {
+      from { opacity: 0; transform: translateX(-14px) scale(0.98); }
+      to { opacity: 1; transform: translateX(0) scale(1); }
+    }
+
+    @media (max-width: 767px) {
+      .hero.hero-chat {
+        padding: 110px 16px 70px;
+      }
+
+      .hero.hero-chat h1 {
+        font-size: 40px;
+      }
+
+      .chat-shell {
+        padding: 18px;
+      }
+
+      .chat-box {
+        height: 360px;
+      }
+
+      .input-area {
+        grid-template-columns: 1fr auto;
+      }
+
+      .clear-btn {
+        display: none;
+      }
+
+      .message {
+        max-width: 92%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="video-bg">
+    <video autoplay muted loop playsinline>
+      <source src="Fundo.mp4" type="video/mp4">
+      Seu navegador não suporta vídeo.
+    </video>
+  </div>
+
+  <header class="header">
+    <div class="logo">SATO STUDIOS</div>
+  </header>
+
+  <section class="hero hero-chat">
+    <h1>SATO IA</h1>
+    <p class="subtitle">
+      Intêligência artificial em fase de testes. Em caso de Bug, relate por favor.
+    </p>
+
+    <div class="chat-shell">
+      <section id="chat" class="chat-box" aria-live="polite"></section>
+
+      <div class="input-area">
+        <input id="msg" placeholder="Digite sua mensagem..." autocomplete="off" />
+        <button class="send-btn" id="send">Enviar</button>
+        <button class="clear-btn" id="clear">Limpar</button>
+      </div>
+
+      <div class="chips">
+        <button class="chip" data-msg="Quais são os serviços do SATO?">Serviços</button>
+        <button class="chip" data-msg="Me ajude a criar um briefing.">Briefing</button>
+        <button class="chip" data-msg="Gere 5 nomes para uma marca de café artesanal.">Gerar nomes</button>
+        <button class="chip" data-msg="Quero um checklist de lançamento de site.">Checklist</button>
+        <button class="chip" data-msg="Resumo desta conversa.">Resumo</button>
+        <button class="chip" data-msg="Ensinar: Pergunta = Resposta">Ensinar</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    © Sato Motion Studios - o site ainda se encontra em fase de desenvolvimento.
+  </footer>
+
+  <script>
+    const reveals = document.querySelectorAll('.reveal, .reveal-soft');
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    reveals.forEach(el => observer.observe(el));
+  </script>
+
+  <script>
+    const VERSION = "offline-max";
+    const STORAGE_KEYS = {
+      memory: "sato_ai_memory",
+      learned: "sato_ai_learned"
+    };
+    const MAX_HISTORY = 60;
+    const SIM_THRESHOLD = 0.62;
+
+    const chat = document.getElementById("chat");
+    const input = document.getElementById("msg");
+    const sendBtn = document.getElementById("send");
+    const clearBtn = document.getElementById("clear");
+
+    const conversation = [];
+    const state = {
+      name: null,
+      pending: null,
+      lastIntent: null,
+      lastTopic: null,
+      memory: loadMemory(),
+      learned: loadLearned(),
+      project: {
+        type: [],
+        scope: [],
+        deadline: null,
+        budget: null
+      }
+    };
+
+    const quickHelp =
+      "Posso ajudar com: serviços, briefing, processo, prazos, orçamento, entregáveis, revisões, portfólio, checklist, ideias, nomes, textos e cálculos. Para ensinar, use: Ensinar: Pergunta = Resposta";
+
+    const fallbackReplies = [
+      "Posso responder isso se você detalhar um pouco mais o contexto.",
+      "Não tenho certeza sobre isso, mas posso ajudar a pensar junto. Quer explicar melhor?",
+      "Se quiser, posso aprender: use 'Ensinar: Pergunta = Resposta'."
+    ];
+
+    const knowledgeBase = [
+      {
+        id: "services",
+        title: "Serviços",
+        keywords: ["servico", "servicos", "serviços", "branding", "identidade", "logo", "rebranding", "motion", "animacao", "animação", "video", "vídeo", "ux", "ui", "web", "site", "landing", "app", "aplicativo", "produto digital", "social", "conteudo", "conteúdo"],
+        replies: [
+          "O SATO atua em branding, motion design, produto digital (UX/UI) e web. Quer focar em qual área?",
+          "Trabalhamos com identidade visual, motion e experiências digitais. Posso detalhar cada frente."
+        ]
+      },
+      {
+        id: "process",
+        title: "Processo",
+        keywords: ["processo", "etapas", "workflow", "fluxo", "metodo", "método", "como funciona", "passo a passo"],
+        replies: [
+          "Processo típico: discovery → estratégia → criação → refinamento → entrega. Quer que eu detalhe cada fase?"
+        ]
+      },
+      {
+        id: "briefing",
+        title: "Briefing",
+        keywords: ["briefing", "questionario", "questionário", "formulario", "formulário", "preencher"],
+        replies: [
+          "Posso conduzir um briefing em 7 perguntas para organizar o projeto."
+        ],
+        action: "briefing"
+      },
+      {
+        id: "budget",
+        title: "Orçamento",
+        keywords: ["orcamento", "orçamento", "preco", "preço", "custo", "valor", "investimento"],
+        replies: [
+          "Orçamentos variam por escopo, prazo e complexidade. Posso te ajudar a montar um pedido claro."
+        ]
+      },
+      {
+        id: "timeline",
+        title: "Prazos",
+        keywords: ["prazo", "prazos", "timeline", "cronograma", "tempo", "entrega"],
+        replies: [
+          "Prazos variam conforme escopo. Me diga o tipo de projeto para eu estimar um intervalo."
+        ]
+      },
+      {
+        id: "deliverables",
+        title: "Entregáveis",
+        keywords: ["entregavel", "entregáveis", "arquivos", "formatos", "brandbook", "manual", "guia", "assets"],
+        replies: [
+          "Entregáveis comuns: arquivos finais (AI/SVG/PNG), guias de uso, motion files e protótipos."
+        ]
+      },
+      {
+        id: "revisions",
+        title: "Revisões",
+        keywords: ["revisao", "revisões", "ajustes", "alteracoes", "alterações"],
+        replies: [
+          "Definir rodadas de ajustes ajuda a manter o prazo. Quer um fluxo de aprovação simples?"
+        ]
+      },
+      {
+        id: "portfolio",
+        title: "Portfólio",
+        keywords: ["portfolio", "portfólio", "case", "cases", "projetos", "trabalhos"],
+        replies: [
+          "Posso destacar cases por área: branding, motion ou produto digital. Qual você quer ver primeiro?"
+        ]
+      },
+      {
+        id: "branding",
+        title: "Branding",
+        keywords: ["branding", "marca", "posicionamento", "identidade", "brand"],
+        replies: [
+          "Branding é a estratégia por trás da marca: posicionamento, tom de voz e percepção. Quer um plano de marca?"
+        ]
+      },
+      {
+        id: "logo",
+        title: "Logo",
+        keywords: ["logo", "logotipo", "simbolo", "símbolo"],
+        replies: [
+          "Um bom logo precisa ser simples, memorável e versátil. Quer um checklist para avaliação?"
+        ]
+      },
+      {
+        id: "ux",
+        title: "UX",
+        keywords: ["ux", "experiencia do usuario", "experiência do usuário", "usabilidade"],
+        replies: [
+          "UX foca na experiência do usuário: pesquisa, jornada e testes. Quer um roteiro de UX?"
+        ]
+      },
+      {
+        id: "ui",
+        title: "UI",
+        keywords: ["ui", "interface", "design de interface", "componentes"],
+        replies: [
+          "UI trata da camada visual e dos componentes. Posso sugerir padrões de interface."
+        ]
+      },
+      {
+        id: "landing",
+        title: "Landing Page",
+        keywords: ["landing", "landing page", "pagina de vendas", "página de vendas"],
+        replies: [
+          "Uma landing eficaz tem: proposta clara, benefícios, prova social e CTA forte."
+        ]
+      },
+      {
+        id: "motion",
+        title: "Motion",
+        keywords: ["motion", "animacao", "animação", "video", "vídeo", "storyboard"],
+        replies: [
+          "Motion design combina ritmo, narrativa e clareza visual. Quer um passo a passo de storyboard?"
+        ]
+      },
+      {
+        id: "copy",
+        title: "Copywriting",
+        keywords: ["copy", "copywriting", "texto", "headline", "slogan", "cta"],
+        replies: [
+          "Uma boa copy foca em benefício, prova e chamada para ação. Posso gerar versões."
+        ]
+      },
+      {
+        id: "seo",
+        title: "SEO",
+        keywords: ["seo", "busca", "google", "palavras-chave", "rankear"],
+        replies: [
+          "SEO envolve conteúdo útil, estrutura clara e performance. Quer um checklist rápido?"
+        ]
+      },
+      {
+        id: "strategy",
+        title: "Estratégia",
+        keywords: ["estrategia", "estratégia", "plano", "roadmap", "kpi", "okr"],
+        replies: [
+          "Posso criar um plano com metas, etapas e métricas. Qual é o objetivo principal?"
+        ]
+      },
+      {
+        id: "contact",
+        title: "Contato",
+        keywords: ["contato", "email", "e-mail", "whatsapp", "telefone", "reuniao", "reunião"],
+        replies: [
+          "Posso montar uma mensagem inicial de contato. Prefere e-mail ou WhatsApp?"
+        ]
+      }
+    ];
+
+    const briefingQuestions = [
+      { key: "contexto", text: "Qual é o contexto do projeto?" },
+      { key: "objetivo", text: "Qual é o objetivo principal?" },
+      { key: "publico", text: "Quem é o público-alvo?" },
+      { key: "diferenciais", text: "Quais são os diferenciais da marca ou produto?" },
+      { key: "entregaveis", text: "Quais entregáveis você espera receber?" },
+      { key: "prazo", text: "Qual é o prazo desejado?" },
+      { key: "referencias", text: "Tem referências ou inspirações?" }
+    ];
+
+    const creativeSeeds = {
+      adjectives: ["lumina", "vivo", "claro", "azimute", "bravio", "aura", "pulse", "flux", "nova", "sutile"],
+      nouns: ["studio", "atelier", "lab", "works", "craft", "house", "collective", "frame", "signal", "field"],
+      verbs: ["criar", "construir", "lapidar", "acelerar", "elevar", "transformar"],
+      moods: ["sofisticado", "minimal", "orgânico", "futurista", "nostálgico", "ousado"]
+    };
+    function loadMemory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.memory);
+        if (!raw) return { facts: {}, preferences: [], notes: [] };
+        return JSON.parse(raw);
+      } catch {
+        return { facts: {}, preferences: [], notes: [] };
+      }
+    }
+
+    function saveMemory() {
+      localStorage.setItem(STORAGE_KEYS.memory, JSON.stringify(state.memory));
+    }
+
+    function loadLearned() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEYS.learned);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveLearned() {
+      localStorage.setItem(STORAGE_KEYS.learned, JSON.stringify(state.learned.slice(-200)));
+    }
+
+    function nowTime() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2, "0");
+      const mm = String(now.getMinutes()).padStart(2, "0");
+      return `${hh}:${mm}`;
+    }
+
+    function normalize(text) {
+      return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^\w\s\-\/]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function tokenize(text) {
+      return normalize(text).split(/\s+/).filter(Boolean);
+    }
+
+    function appendMessage(role, text, typing = false) {
+      const bubble = document.createElement("div");
+      bubble.className = `message ${role}`;
+      if (typing) {
+        bubble.innerHTML = `<span class="typing">${text}</span>`;
+      } else {
+        bubble.textContent = text;
+        const time = document.createElement("span");
+        time.className = "time";
+        time.textContent = nowTime();
+        bubble.appendChild(time);
+      }
+      chat.appendChild(bubble);
+      chat.scrollTop = chat.scrollHeight;
+      return bubble;
+    }
+
+    function pick(list) {
+      return list[Math.floor(Math.random() * list.length)];
+    }
+
+    function similarity(a, b) {
+      const aTokens = new Set(tokenize(a));
+      const bTokens = new Set(tokenize(b));
+      if (!aTokens.size || !bTokens.size) return 0;
+      let intersection = 0;
+      aTokens.forEach((token) => {
+        if (bTokens.has(token)) intersection += 1;
+      });
+      const union = new Set([...aTokens, ...bTokens]).size;
+      const jaccard = union ? intersection / union : 0;
+      const contains = normalize(a).includes(normalize(b)) || normalize(b).includes(normalize(a)) ? 0.2 : 0;
+      const lengthScore = 1 - Math.abs(aTokens.size - bTokens.size) / Math.max(aTokens.size, bTokens.size);
+      return Math.min(1, jaccard * 0.7 + lengthScore * 0.2 + contains);
+    }
+
+    function scoreEntry(entry, text, tokens) {
+      let score = 0;
+      entry.keywords.forEach((keyword) => {
+        const key = normalize(keyword);
+        if (key.includes(" ")) {
+          if (text.includes(key)) score += 3;
+        } else if (tokens.includes(key) || text.includes(key)) {
+          score += 1;
+        }
+      });
+      return score;
+    }
+
+    function topEntries(text, tokens) {
+      return knowledgeBase
+        .map((entry) => ({ entry, score: scoreEntry(entry, text, tokens) }))
+        .filter((item) => item.score > 0)
+        .sort((a, b) => b.score - a.score);
+    }
+
+    function addLearned(question, answer) {
+      const normalized = normalize(question);
+      const existing = state.learned.find((item) => normalize(item.q) === normalized);
+      if (existing) {
+        existing.a = answer;
+        existing.updatedAt = new Date().toISOString();
+      } else {
+        state.learned.push({ q: question.trim(), a: answer.trim(), createdAt: new Date().toISOString() });
+      }
+      saveLearned();
+    }
+
+    function findLearnedAnswer(message) {
+      if (!state.learned.length) return null;
+      let best = null;
+      let bestScore = 0;
+      state.learned.forEach((item) => {
+        const score = similarity(message, item.q);
+        if (score > bestScore) {
+          bestScore = score;
+          best = item;
+        }
+      });
+      return bestScore >= SIM_THRESHOLD ? best : null;
+    }
+
+    function parseTeachPattern(message) {
+      const direct = message.match(/^\s*(?:ensinar|aprender|aprenda|ensine)\s*[:\-]?\s*(.+)$/i);
+      if (!direct) return null;
+      const payload = direct[1];
+      const parts = payload.split(/=>|->|=/);
+      if (parts.length < 2) return null;
+      const question = parts[0].trim();
+      const answer = parts.slice(1).join("=").trim();
+      if (!question || !answer) return null;
+      return { question, answer };
+    }
+
+    function handlePending(message) {
+      if (!state.pending) return null;
+      const text = normalize(message);
+
+      if (text.includes("cancelar")) {
+        state.pending = null;
+        return "Ok, cancelado. No que posso ajudar agora?";
+      }
+
+      if (state.pending.type === "teach_question") {
+        state.pending.question = message.trim();
+        state.pending.type = "teach_answer";
+        return "Qual deve ser a resposta para essa pergunta?";
+      }
+
+      if (state.pending.type === "teach_answer") {
+        addLearned(state.pending.question, message.trim());
+        const learnedCount = state.learned.length;
+        state.pending = null;
+        return `Aprendido! Agora sei ${learnedCount} respostas. Quer ensinar outra?`;
+      }
+
+      if (state.pending.type === "briefing") {
+        const current = briefingQuestions[state.pending.step];
+        if (current) {
+          state.pending.answers[current.key] = message.trim();
+          state.pending.step += 1;
+        }
+        if (state.pending.step >= briefingQuestions.length) {
+          const answers = state.pending.answers;
+          state.pending = null;
+          return `Briefing pronto:\nContexto: ${answers.contexto}\nObjetivo: ${answers.objetivo}\nPúblico: ${answers.publico}\nDiferenciais: ${answers.diferenciais}\nEntregáveis: ${answers.entregaveis}\nPrazo: ${answers.prazo}\nReferências: ${answers.referencias}\n\nQuer que eu transforme isso em uma proposta?`;
+        }
+        return briefingQuestions[state.pending.step].text;
+      }
+
+      if (state.pending.type === "await_text") {
+        const task = state.pending.task;
+        state.pending = null;
+        if (task === "summary") return summarizeText(message);
+        if (task === "rewrite") return rewriteText(message, "claro");
+      }
+
+      if (state.pending.type === "brainstorm_theme") {
+        const reply = generateIdeas(message);
+        state.pending = null;
+        return reply;
+      }
+
+      if (state.pending.type === "name_theme") {
+        const reply = generateNames(message, 5);
+        state.pending = null;
+        return reply;
+      }
+
+      if (state.pending.type === "slogan_theme") {
+        const reply = generateSlogans(message, 4);
+        state.pending = null;
+        return reply;
+      }
+
+      return null;
+    }
+
+    function rememberFacts(message) {
+      const nameMatch = message.match(/(meu nome e|me chamo|sou o|sou a)\s+([A-Za-zÀ-ÿ' -]{2,40})/i);
+      if (nameMatch) {
+        state.name = nameMatch[2].trim();
+        state.memory.facts.nome = state.name;
+        saveMemory();
+        return `Prazer, ${state.name}!`;
+      }
+
+      const prefMatch = message.match(/(eu gosto de|prefiro|eu curto)\s+(.+)/i);
+      if (prefMatch) {
+        state.memory.preferences.push(prefMatch[2].trim());
+        saveMemory();
+        return "Anotado. Vou lembrar disso.";
+      }
+      return null;
+    }
+
+    function handleMath(message) {
+      const exprMatch = message.match(/(-?\d+(?:[.,]\d+)?\s*[\+\-\*\/]\s*)+-?\d+(?:[.,]\d+)?/);
+      if (!exprMatch) return null;
+      const expr = exprMatch[0].replace(/,/g, ".");
+      if (!/^[0-9+\-*/().\s]+$/.test(expr)) return null;
+      try {
+        const result = Function(`"use strict"; return (${expr})`)();
+        if (Number.isFinite(result)) {
+          return `Resultado: ${result}`;
+        }
+      } catch {
+        return null;
+      }
+      return null;
+    }
+
+    function handleUnits(message) {
+      const text = normalize(message);
+      const number = /(\d+(?:[.,]\d+)?)/;
+      const numMatch = text.match(number);
+      if (!numMatch) return null;
+      const value = Number(numMatch[1].replace(",", "."));
+      if (Number.isNaN(value)) return null;
+
+      if (text.includes("celsius") && text.includes("fahrenheit")) {
+        const result = (value * 9) / 5 + 32;
+        return `${value}°C = ${result.toFixed(1)}°F`;
+      }
+      if (text.includes("fahrenheit") && text.includes("celsius")) {
+        const result = ((value - 32) * 5) / 9;
+        return `${value}°F = ${result.toFixed(1)}°C`;
+      }
+      if (text.includes("cm") && (text.includes("m ") || text.endsWith(" m") || text.includes("metros"))) {
+        return `${value} cm = ${(value / 100).toFixed(2)} m`;
+      }
+      if ((text.includes("m ") || text.endsWith(" m") || text.includes("metros")) && text.includes("cm")) {
+        return `${value} m = ${(value * 100).toFixed(0)} cm`;
+      }
+      if (text.includes("km") && text.includes("m")) {
+        return `${value} km = ${(value * 1000).toFixed(0)} m`;
+      }
+      if (text.includes("kg") && text.includes("g")) {
+        return `${value} kg = ${(value * 1000).toFixed(0)} g`;
+      }
+      if (text.includes("g") && text.includes("kg")) {
+        return `${value} g = ${(value / 1000).toFixed(3)} kg`;
+      }
+      if (text.includes("kg") && (text.includes("lb") || text.includes("libras"))) {
+        return `${value} kg = ${(value * 2.2046).toFixed(2)} lb`;
+      }
+      if ((text.includes("lb") || text.includes("libras")) && text.includes("kg")) {
+        return `${value} lb = ${(value / 2.2046).toFixed(2)} kg`;
+      }
+      return null;
+    }
+
+    function handleDateTime(message) {
+      const text = normalize(message);
+      if (text.includes("hora")) {
+        return `Agora são ${nowTime()}.`;
+      }
+      if (text.includes("data") || text.includes("hoje")) {
+        const today = new Date();
+        return `Hoje é ${today.toLocaleDateString("pt-BR")}.`;
+      }
+      return null;
+    }
+
+    function handleRandom(message) {
+      const text = normalize(message);
+      if (text.includes("numero aleatorio") || text.includes("número aleatório")) {
+        return `Número aleatório: ${Math.floor(Math.random() * 1000)}`;
+      }
+      if (text.includes("jogar dado") || text.includes("dado")) {
+        return `Resultado do dado: ${Math.floor(Math.random() * 6) + 1}`;
+      }
+      return null;
+    }
+
+    function summarizeConversation() {
+      const recentUser = conversation.filter((msg) => msg.role === "user").slice(-6);
+      if (!recentUser.length) return "Ainda não temos conversa suficiente para resumir.";
+      const topics = recentUser.map((msg) => msg.text).join(" ");
+      return summarizeText(topics);
+    }
+    function summarizeText(text) {
+      const sentences = text.split(/[.!?]\s+/).filter(Boolean);
+      if (sentences.length <= 1) {
+        return `Resumo: ${text.trim()}`;
+      }
+      const words = tokenize(text).filter((word) => word.length > 3);
+      const freq = {};
+      words.forEach((word) => {
+        freq[word] = (freq[word] || 0) + 1;
+      });
+      const scored = sentences.map((sentence) => {
+        const score = tokenize(sentence).reduce((sum, word) => sum + (freq[word] || 0), 0);
+        return { sentence, score };
+      });
+      scored.sort((a, b) => b.score - a.score);
+      const top = scored.slice(0, 2).map((item) => item.sentence.trim());
+      return `Resumo: ${top.join(". ")}.`;
+    }
+
+    function rewriteText(text, tone) {
+      const cleaned = text.replace(/\s+/g, " ").trim();
+      const formal = cleaned
+        .replace(/\bvc\b/gi, "você")
+        .replace(/\bpra\b/gi, "para")
+        .replace(/\btô\b/gi, "estou")
+        .replace(/\bta\b/gi, "está");
+      const casual = cleaned
+        .replace(/\bvocê\b/gi, "vc")
+        .replace(/\bpara\b/gi, "pra")
+        .replace(/\bestou\b/gi, "tô");
+
+      if (tone === "casual") return `Versão casual:\n${casual}`;
+      return `Versão clara:\n${formal}\n\nVersão curta:\n${formal.split(".").slice(0, 2).join(".").trim()}`;
+    }
+
+    function handleRewrite(message) {
+      const lower = message.toLowerCase();
+      if (lower.includes("reescreva") || lower.includes("melhore")) {
+        const text = message.split(":").slice(1).join(":").trim();
+        if (!text) {
+          state.pending = { type: "await_text", task: "rewrite" };
+          return "Envie o texto que você quer reescrever.";
+        }
+        return rewriteText(text, "claro");
+      }
+      return null;
+    }
+
+    function handleSummary(message) {
+      const lower = message.toLowerCase();
+      if (lower.includes("resumo") || lower.includes("resumir")) {
+        const text = message.split(":").slice(1).join(":").trim();
+        if (!text) return summarizeConversation();
+        return summarizeText(text);
+      }
+      return null;
+    }
+
+    function generateNames(topic, count) {
+      const theme = normalize(topic);
+      const names = [];
+      for (let i = 0; i < count; i += 1) {
+        const partA = pick(creativeSeeds.adjectives);
+        const partB = theme.split(" ")[0] || pick(creativeSeeds.nouns);
+        const partC = Math.random() > 0.5 ? pick(creativeSeeds.nouns) : "";
+        const name = `${capitalize(partA)} ${capitalize(partB)}${partC ? " " + capitalize(partC) : ""}`;
+        names.push(name.trim());
+      }
+      return `Sugestões de nome para "${topic}":\n- ${names.join("\n- ")}`;
+    }
+
+    function generateSlogans(topic, count) {
+      const base = topic.trim();
+      const templates = [
+        `O sabor de ${base} com alma artesanal.`,
+        `${capitalize(base)} para quem busca experiência.`,
+        `Mais que ${base}, uma história.`,
+        `Transforme o dia com ${base}.`,
+        `${capitalize(base)} feito para lembrar.`
+      ];
+      return `Sugestões de slogan:\n- ${templates.slice(0, count).join("\n- ")}`;
+    }
+
+    function generateIdeas(topic) {
+      const ideas = [
+        `Crie uma identidade visual baseada em ${pick(creativeSeeds.moods)} com detalhes inspirados em ${topic}.`,
+        `Pense em uma campanha com storytelling: início, conflito e solução ligados a ${topic}.`,
+        `Monte um conceito de experiência que una ${topic} com sensações sensoriais.`,
+        `Use uma paleta que traduza ${topic} e contraste com um detalhe surpresa.`,
+        `Explorar microanimações para reforçar a personalidade de ${topic}.`
+      ];
+      return `Ideias para "${topic}":\n- ${ideas.join("\n- ")}`;
+    }
+
+    function handleNameGenerator(message) {
+      const lower = message.toLowerCase();
+      if (lower.includes("nome") || lower.includes("nomes")) {
+        const match = message.match(/nome(?:s)?\s+(?:para|de)\s+(.+)/i);
+        if (!match) {
+          state.pending = { type: "name_theme" };
+          return "Para gerar nomes, me diga o tema. Ex: 'nomes para cafeteria'.";
+        }
+        return generateNames(match[1], 5);
+      }
+      return null;
+    }
+
+    function handleSlogan(message) {
+      if (message.toLowerCase().includes("slogan")) {
+        const match = message.match(/slogan\s+(?:para|de)\s+(.+)/i);
+        if (!match) {
+          state.pending = { type: "slogan_theme" };
+          return "Qual é o tema do slogan?";
+        }
+        return generateSlogans(match[1], 4);
+      }
+      return null;
+    }
+
+    function handleChecklist(message) {
+      const lower = message.toLowerCase();
+      if (lower.includes("checklist") || lower.includes("lista") || lower.includes("passo a passo")) {
+        const theme = message.split("de").slice(1).join("de").trim();
+        const topic = theme || "projeto";
+        return `Checklist para ${topic}:\n- Definir objetivo\n- Mapear público-alvo\n- Levantar referências\n- Definir escopo e entregáveis\n- Criar rascunho/protótipo\n- Revisar e ajustar\n- Finalizar e entregar`;
+      }
+      return null;
+    }
+
+    function handlePlan(message) {
+      const lower = message.toLowerCase();
+      if (lower.includes("plano") || lower.includes("estrategia") || lower.includes("estratégia")) {
+        return "Plano básico: 1) Diagnóstico 2) Objetivos 3) Estratégia 4) Execução 5) Métricas. Quer que eu detalhe algum passo?";
+      }
+      return null;
+    }
+
+    function handleBrainstorm(message) {
+      const lower = message.toLowerCase();
+      if (lower.includes("ideia") || lower.includes("ideias") || lower.includes("brainstorm")) {
+        const match = message.match(/(?:ideias|brainstorm)\s+(?:para|de)\s+(.+)/i);
+        if (!match) {
+          state.pending = { type: "brainstorm_theme" };
+          return "Sobre qual tema você quer ideias?";
+        }
+        return generateIdeas(match[1]);
+      }
+      return null;
+    }
+    function handleCommand(message) {
+      if (!message.startsWith("/")) return null;
+      const [command, ...rest] = message.slice(1).split(" ");
+      const arg = rest.join(" ").trim();
+
+      if (command === "help") {
+        return "Comandos: /help, /teach pergunta = resposta, /forget pergunta, /list, /reset";
+      }
+      if (command === "teach") {
+        if (!arg.includes("=")) {
+          state.pending = { type: "teach_question" };
+          return "Qual pergunta você quer que eu aprenda?";
+        }
+        const parts = arg.split("=");
+        addLearned(parts[0], parts.slice(1).join("=").trim());
+        return "Aprendido via comando.";
+      }
+      if (command === "forget") {
+        const normalized = normalize(arg);
+        const before = state.learned.length;
+        state.learned = state.learned.filter((item) => normalize(item.q) !== normalized);
+        saveLearned();
+        return before === state.learned.length ? "Não encontrei essa pergunta." : "Aprendizado removido.";
+      }
+      if (command === "list") {
+        if (!state.learned.length) return "Nenhum aprendizado salvo.";
+        const list = state.learned.slice(-10).map((item) => `- ${item.q}`);
+        return `Últimos aprendizados:\n${list.join("\n")}`;
+      }
+      if (command === "reset") {
+        state.learned = [];
+        state.memory = { facts: {}, preferences: [], notes: [] };
+        saveLearned();
+        saveMemory();
+        return "Memória e aprendizados apagados.";
+      }
+      return "Comando desconhecido. Use /help.";
+    }
+
+    function capitalize(text) {
+      if (!text) return "";
+      return text.charAt(0).toUpperCase() + text.slice(1);
+    }
+
+    function buildReply(message) {
+      const text = normalize(message);
+      const tokens = tokenize(message);
+
+      if (text.includes("ajuda") || text.includes("menu") || text.includes("opcoes") || text.includes("opções")) {
+        return quickHelp;
+      }
+
+      const pendingReply = handlePending(message);
+      if (pendingReply) return pendingReply;
+
+      const commandReply = handleCommand(message);
+      if (commandReply) return commandReply;
+
+      const teachMatch = parseTeachPattern(message);
+      if (teachMatch) {
+        addLearned(teachMatch.question, teachMatch.answer);
+        return "Aprendido! Agora posso responder isso daqui em diante.";
+      }
+
+      const memoryReply = rememberFacts(message);
+      if (memoryReply) return memoryReply;
+
+      const learnedAnswer = findLearnedAnswer(message);
+      if (learnedAnswer) return learnedAnswer.a;
+
+      if (/(oi|ola|eai|bom dia|boa tarde|boa noite)/.test(text)) {
+        return state.name ? `Oi, ${state.name}! Como posso ajudar?` : "Oi! Como posso ajudar?";
+      }
+
+      if (/(obrigado|obrigada|valeu|brigado)/.test(text)) {
+        return "Por nada! Se quiser, posso seguir com mais ideias ou detalhes.";
+      }
+
+      if (/(tchau|ate logo|ate mais|falou)/.test(text)) {
+        return "Até mais! Se precisar, é só chamar.";
+      }
+
+      const mathReply = handleMath(message);
+      if (mathReply) return mathReply;
+
+      const unitReply = handleUnits(message);
+      if (unitReply) return unitReply;
+
+      const timeReply = handleDateTime(message);
+      if (timeReply) return timeReply;
+
+      const randomReply = handleRandom(message);
+      if (randomReply) return randomReply;
+
+      const summaryReply = handleSummary(message);
+      if (summaryReply) return summaryReply;
+
+      const rewriteReply = handleRewrite(message);
+      if (rewriteReply) return rewriteReply;
+
+      const nameReply = handleNameGenerator(message);
+      if (nameReply) return nameReply;
+
+      const sloganReply = handleSlogan(message);
+      if (sloganReply) return sloganReply;
+
+      const checklistReply = handleChecklist(message);
+      if (checklistReply) return checklistReply;
+
+      const planReply = handlePlan(message);
+      if (planReply) return planReply;
+
+      const brainstormReply = handleBrainstorm(message);
+      if (brainstormReply) return brainstormReply;
+
+      const intents = topEntries(text, tokens);
+      if (intents.length) {
+        const top = intents[0].entry;
+        state.lastIntent = top.id;
+        state.lastTopic = top.title;
+        if (top.action === "briefing") {
+          state.pending = { type: "briefing", step: 0, answers: {} };
+          return `Vamos iniciar o briefing. ${briefingQuestions[0].text}`;
+        }
+        return pick(top.replies);
+      }
+
+      if (text.includes("resumo")) {
+        return summarizeConversation();
+      }
+
+      return pick(fallbackReplies);
+    }
+
+    function sendMessage(text) {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+
+      appendMessage("user", trimmed);
+      conversation.push({ role: "user", text: trimmed });
+      if (conversation.length > MAX_HISTORY) {
+        conversation.shift();
+      }
+      input.value = "";
+      input.focus();
+
+      const typing = appendMessage("bot", "Digitando...", true);
+      const reply = buildReply(trimmed);
+      const delay = Math.min(700 + reply.length * 6, 1600);
+      setTimeout(() => {
+        typing.remove();
+        appendMessage("bot", reply);
+        conversation.push({ role: "bot", text: reply });
+      }, delay);
+    }
+
+    sendBtn.addEventListener("click", () => sendMessage(input.value));
+    input.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage(input.value);
+      }
+    });
+
+    clearBtn.addEventListener("click", () => {
+      conversation.length = 0;
+      chat.innerHTML = "";
+      state.pending = null;
+      state.project = { type: [], scope: [], deadline: null, budget: null };
+      appendMessage("bot", "Conversa limpa. Posso ajudar em algo novo? Para apagar aprendizados, use /reset.");
+    });
+
+    document.querySelectorAll(".chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const msg = chip.getAttribute("data-msg");
+        sendMessage(msg);
+      });
+    });
+
+    appendMessage("bot", `Olá! Sou a SATO IA. Pergunte algo, tentarei ser o mais util possível!`);
+  </script>
+</body>
+</html>
