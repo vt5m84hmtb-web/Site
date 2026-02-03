@@ -1116,5 +1116,54 @@
 
     appendMessage("bot", `Olá! Sou a SATO IA. Pergunte algo, tentarei ser o mais util possível!`);
   </script>
+  <script>
+  let currentScroll = window.pageYOffset;
+  let targetScroll = currentScroll;
+  let isScrolling = false;
+
+  const ease = 0.08; // quanto menor, mais pesado e suave
+
+  function smoothScroll() {
+    currentScroll += (targetScroll - currentScroll) * ease;
+
+    if (Math.abs(targetScroll - currentScroll) < 0.5) {
+      currentScroll = targetScroll;
+      isScrolling = false;
+    }
+
+    window.scrollTo(0, currentScroll);
+
+    if (isScrolling) {
+      requestAnimationFrame(smoothScroll);
+    }
+  }
+
+  window.addEventListener('wheel', e => {
+    e.preventDefault();
+    targetScroll += e.deltaY;
+    targetScroll = Math.max(
+      0,
+      Math.min(targetScroll, document.body.scrollHeight - window.innerHeight)
+    );
+
+    if (!isScrolling) {
+      isScrolling = true;
+      requestAnimationFrame(smoothScroll);
+    }
+  }, { passive: false });
+
+  /* âncoras suaves com inércia */
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+
+      e.preventDefault();
+      targetScroll = target.getBoundingClientRect().top + window.pageYOffset;
+      isScrolling = true;
+      requestAnimationFrame(smoothScroll);
+    });
+  });
+</script>
 </body>
 </html>
