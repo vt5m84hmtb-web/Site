@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8" />
-  <title>Escolha seu aparelho:</title>
+  <title>SATO STUDIOS</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="logo.png" type="image/png">
 
@@ -12,19 +12,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css" />
-
-  <style>
-    /* Centraliza o bloco principal apenas no index */
-    body.index-center .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 0 20px;
-    }
-  </style>
 </head>
-<body class="index-center">
+<body>
 
   <!-- Video Background -->
   <div class="video-bg">
@@ -33,20 +22,156 @@
     </video>
   </div>
 
+  <!-- Header -->
+  <header class="header reveal-soft">
+    <div class="logo">SATO STUDIOS</div>
+    <nav class="nav">
+      <a href="#sobre">Sobre</a>
+      <a href="#motion">Preços</a>
+      <a href="https://wa.me/993486316" target="_blank">Contato</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
   <section class="hero reveal">
-    <h1>Qual o seu aparelho?</h1>
+    <h1>CÓDIGO EM<br>MOVIMENTO</h1>
     <div class="hero-buttons reveal-soft">
-      <button class="btn-outline" onclick="go('mobile.html')">Mobile</button>
-      <button class="btn-outline" onclick="go('tablet.html')">Tablet</button>
-      <button class="btn-outline" onclick="go('pc.html')">Pc</button>
+      <a href="portfolio.html">
+        <button class="btn-primary">Projetos</button>
+      </a>
+      <a href="https://wa.me/993486316" target="_blank">
+        <button class="btn-outline">Contato</button>
+      </a>
     </div>
   </section>
 
-  <script>
-    function go(page){
-      window.location.href = page;
-    }
+  <!-- About -->
+  <section class="about reveal" id="sobre">
+    <h2>SOBRE MIM...</h2>
+    <p></p>
+    <p>
+      Me chamo Santos, sou designer, editor de vídeo e programador, apaixonado por transformar ideias em<br>
+      experiências visuais que realmente se conectam com as pessoas. Gosto de entender o propósito por trás<br>
+      de cada projeto, porque acredito que design, movimento e código só fazem sentido quando contam<br>
+      uma história e geram impacto real. Trabalho unindo criatividade e técnica, cuidando de cada detalhe —<br>
+      do visual à performance — para entregar algo autêntico, funcional e com identidade. Mais do que criar<br>
+      algo bonito, meu objetivo é criar algo que faça sentido, represente quem está por trás da marca e deixe<br>
+      uma impressão duradoura.
+    </p>
+    <p></p>
+    <a href="https://www.instagram.com/sato_motion/following/?hl=pt_BR" target="_blank">
+      <button class="btn-primary reveal-soft">Instagram</button>
+    </a>
+  </section>
 
+  <!-- Projects / Motion -->
+  <section class="motion reveal">
+    <h2>PROJETOS</h2>
+    <p class="subtitle reveal-soft">
+      Esses são algumas amostras dos meus projetos feito para clientes.
+    </p>
+
+    <div class="cards">
+      <a href="portfolio.html" class="image-card green reveal-soft"></a>
+      <a href="portfolio.html" class="image-card pink reveal-soft"></a>
+      <a href="portfolio.html" class="image-card orange reveal-soft"></a>
+    </div>
+
+<!-- Pricing MOTION -->
+  <section class="pricing reveal">
+    <h2>BANNERS</h2>
+    <p class="subtitle reveal-soft">Preferências irão ser tratadas quando solicitado o orçamento!</p>
+
+    <div class="price-grid two">
+      <div class="price-card reveal-soft">
+        <span class="plan">Plano 1</span>
+        <h3>Origin</h3>
+        <h1>R$60,00</h1>
+        <ul>
+          <li>- 1 arte estática</li>
+          <li>- Layout técnico</li>
+          <li>- Até 3 revisões</li>
+          <li>- Entrega em PNG/JPG</li>
+        </ul>
+        <a href="https://wa.me/993486316" target="_blank">
+          <button>Orçamento</button>
+        </a>
+      </div>
+
+      <div class="price-card reveal-soft">
+        <span class="plan">Plano 2</span>
+        <h3>Infinity</h3>
+        <h1>R$140,00</h1>
+        <ul>
+          <li>- 2 artes estáticas</li>
+          <li>- Layout totalmente adaptável</li>
+          <li>- Até 5 revisões</li>
+          <li>- Entrega em PNG/JPG com alta prioridade</li>
+        </ul>
+        <a href="https://wa.me/993486316" target="_blank">
+          <button>Orçamento</button>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Motion -->
+  <section class="pricing reveal">
+    <h2 id="motion">MOTION</h2>
+    <p class="subtitle reveal-soft">Preços válidos apenas para edições de até 1 minuto.</p>
+
+    <div class="price-grid">
+      <div class="price-card reveal-soft">
+        <span class="plan">Plano 1</span>
+        <h3>Flow</h3>
+        <h1>R$230,00</h1>
+        <ul>
+          <li>- Motion Graphics Flow</li>
+          <li>- Efeitos 2D</li>
+          <li>- SFX</li>
+        </ul>
+        
+          <button>(Indisponível)</button>
+        </a>
+      </div>
+
+      <div class="price-card reveal-soft">
+        <span class="plan">Plano 2</span>
+        <h3>Pulse</h3>
+        <h1>R$370,00</h1>
+        <ul>
+          <li>- Motion Graphics Pulse</li>
+          <li>- Efeitos 2D e 3D</li>
+          <li>- SFX e VFX</li>
+        </ul>
+        
+          <button>(Indisponível)</button>
+        </a>
+      </div>
+
+      <div class="price-card reveal-soft">
+        <span class="plan">Plano 3</span>
+        <h3>Impact</h3>
+        <h1>R$690,00</h1>
+        <ul>
+          <li>- Motion Graphics Impact</li>
+          <li>- Efeitos 2D e 3D</li>
+          <li>- SFX, VFX e Narração</li>
+        </ul>
+        
+          <button>(Indisponível)</button>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer reveal-soft">
+    © Sato Motion Studios - o site ainda se encontra em fase de desenvolvimento v0.01
+  </footer>
+
+  <!-- JS -->
+  <script>
     const reveals = document.querySelectorAll('.reveal, .reveal-soft');
 
     const observer = new IntersectionObserver(
@@ -63,6 +188,56 @@
 
     reveals.forEach(el => observer.observe(el));
   </script>
+<script>
+  let currentScroll = window.pageYOffset;
+  let targetScroll = currentScroll;
+  let isScrolling = false;
+
+  const ease = 0.08; // quanto menor, mais pesado e suave
+
+  function smoothScroll() {
+    currentScroll += (targetScroll - currentScroll) * ease;
+
+    if (Math.abs(targetScroll - currentScroll) < 0.5) {
+      currentScroll = targetScroll;
+      isScrolling = false;
+    }
+
+    window.scrollTo(0, currentScroll);
+
+    if (isScrolling) {
+      requestAnimationFrame(smoothScroll);
+    }
+  }
+
+  window.addEventListener('wheel', e => {
+    e.preventDefault();
+    targetScroll += e.deltaY;
+    targetScroll = Math.max(
+      0,
+      Math.min(targetScroll, document.body.scrollHeight - window.innerHeight)
+    );
+
+    if (!isScrolling) {
+      isScrolling = true;
+      requestAnimationFrame(smoothScroll);
+    }
+  }, { passive: false });
+
+  /* âncoras suaves com inércia */
+  document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener('click', e => {
+      const target = document.querySelector(link.getAttribute('href'));
+      if (!target) return;
+
+      e.preventDefault();
+      targetScroll = target.getBoundingClientRect().top + window.pageYOffset;
+      isScrolling = true;
+      requestAnimationFrame(smoothScroll);
+    });
+  });
+  
+</script>
 
 </body>
 </html>
