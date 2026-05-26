@@ -12,132 +12,6 @@
 
   <style>
     /* ══════════════════════════════════
-       COLOR PICKER FLUTUANTE
-    ══════════════════════════════════ */
-    .cp-trigger {
-      position: fixed;
-      bottom: 28px;
-      right: 28px;
-      z-index: 500;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: var(--acc);
-      border: none;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08);
-      transition: transform .2s, box-shadow .2s;
-    }
-    .cp-trigger:hover {
-      transform: scale(1.1) rotate(15deg);
-      box-shadow: 0 6px 30px rgba(0,0,0,.6), 0 0 20px rgba(var(--acc-rgb),.4);
-    }
-    .cp-trigger svg { pointer-events: none; }
-
-    .cp-panel {
-      position: fixed;
-      bottom: 88px;
-      right: 28px;
-      z-index: 499;
-      background: rgba(10,10,10,.97);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 18px;
-      padding: 20px;
-      width: 260px;
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      box-shadow: 0 20px 60px rgba(0,0,0,.7);
-      opacity: 0;
-      transform: translateY(12px) scale(.96);
-      pointer-events: none;
-      transition: opacity .25s cubic-bezier(.16,1,.3,1), transform .25s cubic-bezier(.16,1,.3,1);
-    }
-    .cp-panel.open {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-      pointer-events: all;
-    }
-    .cp-label {
-      font-family: var(--fm);
-      font-size: 10px;
-      color: rgba(245,243,238,.35);
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      margin-bottom: 14px;
-      display: block;
-    }
-    .cp-swatches {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 14px;
-    }
-    .cp-swatch {
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: 9px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform .15s, border-color .15s, box-shadow .15s;
-      position: relative;
-    }
-    .cp-swatch:hover { transform: scale(1.1); }
-    .cp-swatch.active {
-      border-color: rgba(255,255,255,.5);
-      box-shadow: 0 0 12px rgba(255,255,255,.15);
-    }
-    .cp-swatch.active::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/14px no-repeat;
-      border-radius: 7px;
-    }
-    .cp-divider {
-      height: 1px;
-      background: rgba(255,255,255,.07);
-      margin: 12px 0;
-    }
-    .cp-custom-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .cp-custom-row label {
-      font-family: var(--fm);
-      font-size: 10px;
-      color: rgba(245,243,238,.45);
-      flex: 1;
-    }
-    .cp-color-input {
-      width: 34px;
-      height: 30px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 7px;
-      background: none;
-      cursor: pointer;
-      padding: 2px;
-    }
-    .cp-hex {
-      font-family: var(--fm);
-      font-size: 10px;
-      color: var(--acc);
-      letter-spacing: .05em;
-      min-width: 54px;
-    }
-    .cp-tip {
-      font-family: var(--fm);
-      font-size: 9px;
-      color: rgba(245,243,238,.2);
-      text-align: center;
-      margin-top: 12px;
-      letter-spacing: .06em;
-    }
-
-    /* ══════════════════════════════════
        SEÇÃO FERRAMENTAS v2
     ══════════════════════════════════ */
     .tools-grid {
@@ -291,7 +165,6 @@
       gap: 0 24px;
       position: relative;
     }
-    /* Linha vertical conectora */
     .proc-row:not(:last-child) .proc-line-col::after {
       content: '';
       position: absolute;
@@ -557,7 +430,6 @@
       padding-top: 16px;
     }
 
-    /* Acc rgb variable support */
     :root { --acc-rgb: 200,255,0; }
   </style>
 </head>
@@ -577,31 +449,6 @@
 <!-- Custom cursor (desktop only) -->
 <div class="c-dot" id="cDot" aria-hidden="true"></div>
 <div class="c-ring" id="cRing" aria-hidden="true"></div>
-
-<!-- ════════════════════════════════
-     COLOR PICKER FLUTUANTE
-════════════════════════════════ -->
-<button class="cp-trigger" id="cpTrigger" aria-label="Personalizar cor do tema" aria-expanded="false">
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10c.69 0 1.25-.56 1.25-1.25 0-.325-.125-.62-.325-.845a1.237 1.237 0 01-.32-.84c0-.69.56-1.25 1.25-1.25H15c2.76 0 5-2.24 5-5 0-4.42-3.58-8-8-8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-    <circle cx="6.5" cy="11.5" r="1.25" fill="currentColor"/>
-    <circle cx="9.5" cy="7.5" r="1.25" fill="currentColor"/>
-    <circle cx="14.5" cy="7.5" r="1.25" fill="currentColor"/>
-    <circle cx="17.5" cy="11.5" r="1.25" fill="currentColor"/>
-  </svg>
-</button>
-
-<div class="cp-panel" id="cpPanel" aria-hidden="true">
-  <span class="cp-label">// cor de destaque</span>
-  <div class="cp-swatches" id="cpSwatches"></div>
-  <div class="cp-divider"></div>
-  <div class="cp-custom-row">
-    <label for="cpInput">Personalizada</label>
-    <input type="color" class="cp-color-input" id="cpInput" value="#c8ff00">
-    <span class="cp-hex" id="cpHex">#c8ff00</span>
-  </div>
-  <p class="cp-tip">Preferência salva automaticamente</p>
-</div>
 
 <!-- ════════════════════════════════
      HEADER
@@ -825,39 +672,6 @@
 
     <div class="tools-grid reveal" style="--rd:.1s" id="toolsGrid">
 
-      <!-- After Effects -->
-      <div class="tool-cell">
-        <div class="tool-header">
-          <div class="tool-icon">
-            <img src="after-removebg-preview.png" alt="After Effects">
-          </div>
-          <span class="tool-badge">Motion</span>
-        </div>
-        <div class="tool-name">After Effects</div>
-        <div class="tool-desc">Motion graphics, animações 2D, composição e VFX para vídeos profissionais.</div>
-        <div class="tool-bar-wrap">
-          <div class="tool-bar-label"><span>Proficiência</span><b>95%</b></div>
-          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="95"></div></div>
-        </div>
-      </div>
-
-      <!-- Illustrator -->
-      <div class="tool-cell">
-        <div class="tool-header">
-          <div class="tool-icon">
-            <img src="adobe-removebg-preview.png" alt="Illustrator">
-          </div>
-          <span class="tool-badge">Vetor</span>
-        </div>
-        <div class="tool-name">Illustrator</div>
-        <div class="tool-desc">Ilustração vetorial, branding, logos e identidades visuais completas.</div>
-        <div class="tool-bar-wrap">
-          <div class="tool-bar-label"><span>Proficiência</span><b>90%</b></div>
-          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="90"></div></div>
-        </div>
-      </div>
-
-      <!-- Photoshop -->
       <div class="tool-cell">
         <div class="tool-header">
           <div class="tool-icon">
@@ -868,12 +682,27 @@
         <div class="tool-name">Photoshop</div>
         <div class="tool-desc">Tratamento de imagens, composições fotográficas e design gráfico avançado.</div>
         <div class="tool-bar-wrap">
+          <div class="tool-bar-label"><span>Proficiência</span><b>95%</b></div>
+          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="95"></div></div>
+        </div>
+      </div>
+
+      <div class="tool-cell">
+        <div class="tool-header">
+          <div class="tool-icon">
+            <img src="after-removebg-preview.png" alt="After Effects">
+          </div>
+          <span class="tool-badge">Motion</span>
+        </div>
+        <div class="tool-name">After Effects</div>
+        <div class="tool-desc">Motion graphics, animações 2D, composição e VFX para vídeos profissionais.</div>
+        <div class="tool-bar-wrap">
           <div class="tool-bar-label"><span>Proficiência</span><b>88%</b></div>
           <div class="tool-bar-track"><div class="tool-bar-fill" data-width="88"></div></div>
         </div>
       </div>
 
-      <!-- Premiere Pro -->
+
       <div class="tool-cell">
         <div class="tool-header">
           <div class="tool-icon">
@@ -889,38 +718,7 @@
         </div>
       </div>
 
-      <!-- Figma -->
-      <div class="tool-cell">
-        <div class="tool-header">
-          <div class="tool-icon">
-            <img src="figma-removebg-preview.png" alt="Figma">
-          </div>
-          <span class="tool-badge">UI/UX</span>
-        </div>
-        <div class="tool-name">Figma</div>
-        <div class="tool-desc">Design de interfaces, prototipagem interativa e sistemas de design.</div>
-        <div class="tool-bar-wrap">
-          <div class="tool-bar-label"><span>Proficiência</span><b>80%</b></div>
-          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="80"></div></div>
-        </div>
-      </div>
-
-      <!-- HTML CSS JS -->
-      <div class="tool-cell">
-        <div class="tool-header">
-          <div class="tool-icon">
-            <img src="codigo-removebg-preview.png" alt="HTML CSS JS">
-          </div>
-          <span class="tool-badge">Dev</span>
-        </div>
-        <div class="tool-name">HTML · CSS · JS</div>
-        <div class="tool-desc">Desenvolvimento web, animações CSS, interatividade e sites responsivos.</div>
-        <div class="tool-bar-wrap">
-          <div class="tool-bar-label"><span>Proficiência</span><b>75%</b></div>
-          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="75"></div></div>
-        </div>
-      </div>
-
+      
     </div>
   </div>
 </section>
@@ -1269,77 +1067,6 @@
 <script src="script.js"></script>
 
 <script>
-/* ══════════════════════════════════════
-   COLOR PICKER
-══════════════════════════════════════ */
-const CP_PRESETS = [
-  { hex: '#c8ff00', label: 'Verde Lima' },
-  { hex: '#00d4ff', label: 'Ciano' },
-  { hex: '#ff6b35', label: 'Laranja' },
-  { hex: '#a855f7', label: 'Roxo' },
-  { hex: '#ff3366', label: 'Rosa' },
-  { hex: '#00ff9f', label: 'Verde Neon' },
-  { hex: '#ffd700', label: 'Dourado' },
-  { hex: '#38bdf8', label: 'Azul' },
-];
-
-function hexToRgb(hex) {
-  const r = parseInt(hex.slice(1,3), 16);
-  const g = parseInt(hex.slice(3,5), 16);
-  const b = parseInt(hex.slice(5,7), 16);
-  return `${r},${g},${b}`;
-}
-
-function applyAccent(hex) {
-  document.documentElement.style.setProperty('--acc', hex);
-  document.documentElement.style.setProperty('--acc-rgb', hexToRgb(hex));
-  document.getElementById('cpHex').textContent = hex;
-  document.getElementById('cpInput').value = hex;
-  document.querySelectorAll('.cp-swatch').forEach(s => {
-    s.classList.toggle('active', s.dataset.hex.toLowerCase() === hex.toLowerCase());
-  });
-  try { localStorage.setItem('sato_acc', hex); } catch(e) {}
-}
-
-// Build swatches
-const swatchContainer = document.getElementById('cpSwatches');
-const savedAcc = (() => { try { return localStorage.getItem('sato_acc'); } catch(e) { return null; } })();
-const initialAcc = savedAcc || '#c8ff00';
-
-CP_PRESETS.forEach(p => {
-  const el = document.createElement('button');
-  el.className = 'cp-swatch' + (p.hex === initialAcc ? ' active' : '');
-  el.style.background = p.hex;
-  el.dataset.hex = p.hex;
-  el.title = p.label;
-  el.setAttribute('aria-label', 'Cor: ' + p.label);
-  el.addEventListener('click', () => applyAccent(p.hex));
-  swatchContainer.appendChild(el);
-});
-
-document.getElementById('cpInput').addEventListener('input', e => applyAccent(e.target.value));
-
-// Apply saved color on load
-if (savedAcc) applyAccent(savedAcc);
-
-// Toggle panel
-const cpTrigger = document.getElementById('cpTrigger');
-const cpPanel = document.getElementById('cpPanel');
-
-cpTrigger.addEventListener('click', () => {
-  const isOpen = cpPanel.classList.toggle('open');
-  cpTrigger.setAttribute('aria-expanded', isOpen);
-  cpPanel.setAttribute('aria-hidden', !isOpen);
-});
-
-document.addEventListener('click', e => {
-  if (!cpTrigger.contains(e.target) && !cpPanel.contains(e.target)) {
-    cpPanel.classList.remove('open');
-    cpTrigger.setAttribute('aria-expanded', 'false');
-    cpPanel.setAttribute('aria-hidden', 'true');
-  }
-});
-
 /* ══════════════════════════════════════
    TOOLS BAR ANIMATION
 ══════════════════════════════════════ */
