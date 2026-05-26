@@ -9,6 +9,557 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@300;400;700;900&family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css"/>
+
+  <style>
+    /* ══════════════════════════════════
+       COLOR PICKER FLUTUANTE
+    ══════════════════════════════════ */
+    .cp-trigger {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 500;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--acc);
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.08);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .cp-trigger:hover {
+      transform: scale(1.1) rotate(15deg);
+      box-shadow: 0 6px 30px rgba(0,0,0,.6), 0 0 20px rgba(var(--acc-rgb),.4);
+    }
+    .cp-trigger svg { pointer-events: none; }
+
+    .cp-panel {
+      position: fixed;
+      bottom: 88px;
+      right: 28px;
+      z-index: 499;
+      background: rgba(10,10,10,.97);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 18px;
+      padding: 20px;
+      width: 260px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.7);
+      opacity: 0;
+      transform: translateY(12px) scale(.96);
+      pointer-events: none;
+      transition: opacity .25s cubic-bezier(.16,1,.3,1), transform .25s cubic-bezier(.16,1,.3,1);
+    }
+    .cp-panel.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all;
+    }
+    .cp-label {
+      font-family: var(--fm);
+      font-size: 10px;
+      color: rgba(245,243,238,.35);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .cp-swatches {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .cp-swatch {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 9px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform .15s, border-color .15s, box-shadow .15s;
+      position: relative;
+    }
+    .cp-swatch:hover { transform: scale(1.1); }
+    .cp-swatch.active {
+      border-color: rgba(255,255,255,.5);
+      box-shadow: 0 0 12px rgba(255,255,255,.15);
+    }
+    .cp-swatch.active::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='%23000' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E") center/14px no-repeat;
+      border-radius: 7px;
+    }
+    .cp-divider {
+      height: 1px;
+      background: rgba(255,255,255,.07);
+      margin: 12px 0;
+    }
+    .cp-custom-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .cp-custom-row label {
+      font-family: var(--fm);
+      font-size: 10px;
+      color: rgba(245,243,238,.45);
+      flex: 1;
+    }
+    .cp-color-input {
+      width: 34px;
+      height: 30px;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 7px;
+      background: none;
+      cursor: pointer;
+      padding: 2px;
+    }
+    .cp-hex {
+      font-family: var(--fm);
+      font-size: 10px;
+      color: var(--acc);
+      letter-spacing: .05em;
+      min-width: 54px;
+    }
+    .cp-tip {
+      font-family: var(--fm);
+      font-size: 9px;
+      color: rgba(245,243,238,.2);
+      text-align: center;
+      margin-top: 12px;
+      letter-spacing: .06em;
+    }
+
+    /* ══════════════════════════════════
+       SEÇÃO FERRAMENTAS v2
+    ══════════════════════════════════ */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 48px;
+    }
+    @media (max-width: 768px) {
+      .tools-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .tools-grid { grid-template-columns: 1fr; }
+    }
+    .tool-cell {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px;
+      padding: 24px 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      transition: border-color .3s, background .3s, transform .3s;
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .tool-cell::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--acc);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .4s cubic-bezier(.16,1,.3,1);
+    }
+    .tool-cell:hover {
+      border-color: rgba(var(--acc-rgb),.18);
+      background: rgba(var(--acc-rgb),.03);
+      transform: translateY(-3px);
+    }
+    .tool-cell:hover::after { transform: scaleX(1); }
+
+    .tool-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .tool-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(var(--acc-rgb),.07);
+      border: 1px solid rgba(var(--acc-rgb),.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      transition: background .3s, border-color .3s;
+    }
+    .tool-cell:hover .tool-icon {
+      background: rgba(var(--acc-rgb),.13);
+      border-color: rgba(var(--acc-rgb),.25);
+    }
+    .tool-icon img {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+    }
+    .tool-badge {
+      font-family: var(--fm);
+      font-size: 9px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--acc);
+      background: rgba(var(--acc-rgb),.08);
+      border: 1px solid rgba(var(--acc-rgb),.15);
+      padding: 3px 9px;
+      border-radius: 100px;
+    }
+    .tool-name {
+      font-family: var(--fd);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      color: var(--w);
+      margin-bottom: 8px;
+    }
+    .tool-desc {
+      font-family: var(--fm);
+      font-size: 11px;
+      color: rgba(245,243,238,.38);
+      line-height: 1.6;
+      margin-bottom: 18px;
+      flex: 1;
+    }
+    .tool-bar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .tool-bar-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .tool-bar-label span {
+      font-family: var(--fm);
+      font-size: 9px;
+      color: rgba(245,243,238,.28);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .tool-bar-label b {
+      font-family: var(--fm);
+      font-size: 10px;
+      color: var(--acc);
+      font-weight: 500;
+      letter-spacing: .04em;
+    }
+    .tool-bar-track {
+      height: 2px;
+      background: rgba(255,255,255,.06);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .tool-bar-fill {
+      height: 100%;
+      background: var(--acc);
+      border-radius: 2px;
+      width: 0;
+      transition: width 1.4s cubic-bezier(.16,1,.3,1);
+    }
+
+    /* ══════════════════════════════════
+       SEÇÃO PROCESSO v2
+    ══════════════════════════════════ */
+    .process-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 56px;
+      position: relative;
+    }
+    .proc-row {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 0 24px;
+      position: relative;
+    }
+    /* Linha vertical conectora */
+    .proc-row:not(:last-child) .proc-line-col::after {
+      content: '';
+      position: absolute;
+      left: 27px;
+      top: 56px;
+      bottom: 0;
+      width: 1px;
+      background: rgba(255,255,255,.07);
+    }
+    .proc-line-col {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 0;
+    }
+    .proc-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.1);
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      transition: border-color .3s, background .3s;
+    }
+    .proc-row:hover .proc-circle {
+      border-color: var(--acc);
+      background: rgba(var(--acc-rgb),.06);
+    }
+    .proc-circle-num {
+      font-family: var(--fd);
+      font-size: 11px;
+      font-weight: 900;
+      color: rgba(245,243,238,.25);
+      letter-spacing: .04em;
+      transition: color .3s;
+    }
+    .proc-row:hover .proc-circle-num { color: var(--acc); }
+
+    .proc-content {
+      padding: 14px 0 40px;
+      border-bottom: 1px solid rgba(255,255,255,.04);
+    }
+    .proc-row:last-child .proc-content { border-bottom: none; padding-bottom: 0; }
+
+    .proc-tag {
+      font-family: var(--fm);
+      font-size: 9px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--acc);
+      margin-bottom: 8px;
+      display: block;
+      opacity: .7;
+    }
+    .proc-title {
+      font-family: var(--fd);
+      font-size: clamp(18px, 3vw, 24px);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--w);
+      margin-bottom: 10px;
+      line-height: 1.1;
+    }
+    .proc-title em {
+      font-family: var(--fs);
+      font-style: italic;
+      color: var(--acc);
+    }
+    .proc-desc {
+      font-family: var(--fm);
+      font-size: 12px;
+      color: rgba(245,243,238,.38);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+    .proc-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+    .proc-chip {
+      font-family: var(--fm);
+      font-size: 9px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: rgba(245,243,238,.4);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      padding: 4px 10px;
+      border-radius: 100px;
+    }
+    @media (max-width: 600px) {
+      .proc-row { grid-template-columns: 44px 1fr; gap: 0 16px; }
+      .proc-circle { width: 44px; height: 44px; }
+      .proc-row:not(:last-child) .proc-line-col::after { left: 21px; }
+    }
+
+    /* ══════════════════════════════════
+       SEÇÃO DEPOIMENTOS
+    ══════════════════════════════════ */
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 48px;
+    }
+    @media (max-width: 900px) {
+      .test-grid { grid-template-columns: 1fr; }
+    }
+    .test-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color .3s, background .3s, transform .3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .test-card::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      right: 16px;
+      font-family: var(--fs);
+      font-size: 80px;
+      color: rgba(var(--acc-rgb),.07);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .test-card:hover {
+      border-color: rgba(var(--acc-rgb),.2);
+      background: rgba(var(--acc-rgb),.03);
+      transform: translateY(-4px);
+    }
+    .test-stars {
+      display: flex;
+      gap: 3px;
+    }
+    .test-star {
+      width: 12px;
+      height: 12px;
+      background: var(--acc);
+      clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+    }
+    .test-text {
+      font-family: var(--fs);
+      font-size: 15px;
+      font-style: italic;
+      color: rgba(245,243,238,.7);
+      line-height: 1.65;
+      flex: 1;
+    }
+    .test-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      padding-top: 14px;
+    }
+    .test-av {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(var(--acc-rgb),.12);
+      border: 1px solid rgba(var(--acc-rgb),.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--fd);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--acc);
+      flex-shrink: 0;
+    }
+    .test-info strong {
+      display: block;
+      font-family: var(--fm);
+      font-size: 11px;
+      color: var(--w);
+      font-weight: 500;
+    }
+    .test-info span {
+      font-family: var(--fm);
+      font-size: 10px;
+      color: rgba(245,243,238,.35);
+    }
+
+    /* ══════════════════════════════════
+       FAQ
+    ══════════════════════════════════ */
+    .faq-list {
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: rgba(255,255,255,.06);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .faq-item {
+      background: var(--bg);
+    }
+    .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      text-align: left;
+      font-family: var(--fd);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--w);
+      letter-spacing: .02em;
+      transition: background .2s;
+    }
+    .faq-q:hover { background: rgba(255,255,255,.025); }
+    .faq-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: border-color .25s, background .25s, transform .35s;
+    }
+    .faq-q[aria-expanded="true"] .faq-icon {
+      border-color: var(--acc);
+      background: rgba(var(--acc-rgb),.1);
+      transform: rotate(45deg);
+    }
+    .faq-icon svg { stroke: rgba(245,243,238,.5); }
+    .faq-q[aria-expanded="true"] .faq-icon svg { stroke: var(--acc); }
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .45s cubic-bezier(.16,1,.3,1), padding .35s;
+    }
+    .faq-a.open { max-height: 300px; }
+    .faq-a-inner {
+      padding: 0 24px 20px;
+      font-family: var(--fm);
+      font-size: 12px;
+      color: rgba(245,243,238,.45);
+      line-height: 1.75;
+      border-top: 1px solid rgba(255,255,255,.05);
+      padding-top: 16px;
+    }
+
+    /* Acc rgb variable support */
+    :root { --acc-rgb: 200,255,0; }
+  </style>
 </head>
 <body>
 
@@ -28,6 +579,31 @@
 <div class="c-ring" id="cRing" aria-hidden="true"></div>
 
 <!-- ════════════════════════════════
+     COLOR PICKER FLUTUANTE
+════════════════════════════════ -->
+<button class="cp-trigger" id="cpTrigger" aria-label="Personalizar cor do tema" aria-expanded="false">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10c.69 0 1.25-.56 1.25-1.25 0-.325-.125-.62-.325-.845a1.237 1.237 0 01-.32-.84c0-.69.56-1.25 1.25-1.25H15c2.76 0 5-2.24 5-5 0-4.42-3.58-8-8-8z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="6.5" cy="11.5" r="1.25" fill="currentColor"/>
+    <circle cx="9.5" cy="7.5" r="1.25" fill="currentColor"/>
+    <circle cx="14.5" cy="7.5" r="1.25" fill="currentColor"/>
+    <circle cx="17.5" cy="11.5" r="1.25" fill="currentColor"/>
+  </svg>
+</button>
+
+<div class="cp-panel" id="cpPanel" aria-hidden="true">
+  <span class="cp-label">// cor de destaque</span>
+  <div class="cp-swatches" id="cpSwatches"></div>
+  <div class="cp-divider"></div>
+  <div class="cp-custom-row">
+    <label for="cpInput">Personalizada</label>
+    <input type="color" class="cp-color-input" id="cpInput" value="#c8ff00">
+    <span class="cp-hex" id="cpHex">#c8ff00</span>
+  </div>
+  <p class="cp-tip">Preferência salva automaticamente</p>
+</div>
+
+<!-- ════════════════════════════════
      HEADER
 ════════════════════════════════ -->
 <header class="hdr" id="hdr">
@@ -43,6 +619,7 @@
 
     <nav class="hdr-nav" aria-label="Principal">
       <a href="#sobre"  class="hl">Sobre</a>
+      <a href="#ferramentas" class="hl">Skills</a>
       <a href="#precos" class="hl">Preços</a>
       <a href="portfolio.html" class="hl">Portfólio</a>
       <a href="https://wa.me/993486316" target="_blank" rel="noopener" class="hdr-cta">
@@ -56,8 +633,9 @@
   </div>
 
   <nav class="mob-nav" id="mobNav" aria-label="Menu mobile" hidden>
-    <a href="#sobre"  class="ml" tabindex="-1">Sobre</a>
-    <a href="#precos" class="ml" tabindex="-1">Preços</a>
+    <a href="#sobre"       class="ml" tabindex="-1">Sobre</a>
+    <a href="#ferramentas" class="ml" tabindex="-1">Skills</a>
+    <a href="#precos"      class="ml" tabindex="-1">Preços</a>
     <a href="portfolio.html" class="ml" tabindex="-1">Portfólio</a>
     <a href="https://wa.me/993486316" target="_blank" rel="noopener" class="ml accent" tabindex="-1">Contato →</a>
   </nav>
@@ -67,8 +645,6 @@
      HERO
 ════════════════════════════════ -->
 <section class="hero" id="hero">
-
-  <!-- parallax layers -->
   <div class="px-layer px-slow" aria-hidden="true">
     <div class="orb o1"></div>
     <div class="orb o2"></div>
@@ -103,7 +679,7 @@
 
       <div class="hero-stats">
         <div class="stat">
-          <span class="sn" data-count="50" data-suffix="+">0</span>
+          <span class="sn" data-count="20" data-suffix="+">0</span>
           <span class="sl">Projetos</span>
         </div>
         <div class="sdiv" aria-hidden="true"></div>
@@ -139,7 +715,6 @@
     <span>Illustrator</span><span class="dot-sep">·</span>
     <span>UI Design</span><span class="dot-sep">·</span>
     <span>Branding</span><span class="dot-sep">·</span>
-    <!-- duplicate for seamless loop -->
     <span>Design</span><span class="dot-sep">·</span>
     <span>Motion Graphics</span><span class="dot-sep">·</span>
     <span>Video Editing</span><span class="dot-sep">·</span>
@@ -156,7 +731,6 @@
 ════════════════════════════════ -->
 <section class="sec" id="sobre">
   <div class="sec-wrap">
-
     <div class="eyebrow reveal">
       <span class="enum">01</span>
       <span class="etag">// sobre mim</span>
@@ -200,7 +774,6 @@
 ════════════════════════════════ -->
 <section class="sec">
   <div class="sec-wrap">
-
     <div class="eyebrow reveal">
       <span class="enum">02</span>
       <span class="etag">// projetos</span>
@@ -236,13 +809,214 @@
 </section>
 
 <!-- ════════════════════════════════
+     FERRAMENTAS / SKILLS
+════════════════════════════════ -->
+<section class="sec" id="ferramentas">
+  <div class="sec-wrap">
+    <div class="eyebrow reveal">
+      <span class="enum">03</span>
+      <span class="etag">// ferramentas</span>
+    </div>
+
+    <div class="proj-hdr reveal">
+      <h2 class="sec-title">Stack &<br><em>Habilidades</em></h2>
+    </div>
+    <p class="sec-sub reveal" style="--rd:.05s">Ferramentas que uso no dia a dia para criar.</p>
+
+    <div class="tools-grid reveal" style="--rd:.1s" id="toolsGrid">
+
+      <!-- After Effects -->
+      <div class="tool-cell">
+        <div class="tool-header">
+          <div class="tool-icon">
+            <img src="after-removebg-preview.png" alt="After Effects">
+          </div>
+          <span class="tool-badge">Motion</span>
+        </div>
+        <div class="tool-name">After Effects</div>
+        <div class="tool-desc">Motion graphics, animações 2D, composição e VFX para vídeos profissionais.</div>
+        <div class="tool-bar-wrap">
+          <div class="tool-bar-label"><span>Proficiência</span><b>95%</b></div>
+          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="95"></div></div>
+        </div>
+      </div>
+
+      <!-- Illustrator -->
+      <div class="tool-cell">
+        <div class="tool-header">
+          <div class="tool-icon">
+            <img src="adobe-removebg-preview.png" alt="Illustrator">
+          </div>
+          <span class="tool-badge">Vetor</span>
+        </div>
+        <div class="tool-name">Illustrator</div>
+        <div class="tool-desc">Ilustração vetorial, branding, logos e identidades visuais completas.</div>
+        <div class="tool-bar-wrap">
+          <div class="tool-bar-label"><span>Proficiência</span><b>90%</b></div>
+          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="90"></div></div>
+        </div>
+      </div>
+
+      <!-- Photoshop -->
+      <div class="tool-cell">
+        <div class="tool-header">
+          <div class="tool-icon">
+            <img src="photo-removebg-preview.png" alt="Photoshop">
+          </div>
+          <span class="tool-badge">Imagem</span>
+        </div>
+        <div class="tool-name">Photoshop</div>
+        <div class="tool-desc">Tratamento de imagens, composições fotográficas e design gráfico avançado.</div>
+        <div class="tool-bar-wrap">
+          <div class="tool-bar-label"><span>Proficiência</span><b>88%</b></div>
+          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="88"></div></div>
+        </div>
+      </div>
+
+      <!-- Premiere Pro -->
+      <div class="tool-cell">
+        <div class="tool-header">
+          <div class="tool-icon">
+            <img src="premiere-removebg-preview.png" alt="Premiere Pro">
+          </div>
+          <span class="tool-badge">Vídeo</span>
+        </div>
+        <div class="tool-name">Premiere Pro</div>
+        <div class="tool-desc">Edição de vídeo profissional, color grading e montagem narrativa.</div>
+        <div class="tool-bar-wrap">
+          <div class="tool-bar-label"><span>Proficiência</span><b>85%</b></div>
+          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="85"></div></div>
+        </div>
+      </div>
+
+      <!-- Figma -->
+      <div class="tool-cell">
+        <div class="tool-header">
+          <div class="tool-icon">
+            <img src="figma-removebg-preview.png" alt="Figma">
+          </div>
+          <span class="tool-badge">UI/UX</span>
+        </div>
+        <div class="tool-name">Figma</div>
+        <div class="tool-desc">Design de interfaces, prototipagem interativa e sistemas de design.</div>
+        <div class="tool-bar-wrap">
+          <div class="tool-bar-label"><span>Proficiência</span><b>80%</b></div>
+          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="80"></div></div>
+        </div>
+      </div>
+
+      <!-- HTML CSS JS -->
+      <div class="tool-cell">
+        <div class="tool-header">
+          <div class="tool-icon">
+            <img src="codigo-removebg-preview.png" alt="HTML CSS JS">
+          </div>
+          <span class="tool-badge">Dev</span>
+        </div>
+        <div class="tool-name">HTML · CSS · JS</div>
+        <div class="tool-desc">Desenvolvimento web, animações CSS, interatividade e sites responsivos.</div>
+        <div class="tool-bar-wrap">
+          <div class="tool-bar-label"><span>Proficiência</span><b>75%</b></div>
+          <div class="tool-bar-track"><div class="tool-bar-fill" data-width="75"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     PROCESSO
+════════════════════════════════ -->
+<section class="sec" id="processo">
+  <div class="sec-wrap">
+    <div class="eyebrow reveal">
+      <span class="enum">04</span>
+      <span class="etag">// processo</span>
+    </div>
+
+    <div class="proj-hdr reveal">
+      <h2 class="sec-title">Como<br><em>Trabalho</em></h2>
+    </div>
+    <p class="sec-sub reveal" style="--rd:.05s">Do briefing à entrega — com transparência em cada etapa.</p>
+
+    <div class="process-timeline reveal" style="--rd:.1s">
+
+      <div class="proc-row">
+        <div class="proc-line-col">
+          <div class="proc-circle"><span class="proc-circle-num">01</span></div>
+        </div>
+        <div class="proc-content">
+          <span class="proc-tag">// descoberta</span>
+          <h3 class="proc-title">Briefing <em>estratégico</em></h3>
+          <p class="proc-desc">Entendo seu negócio, público-alvo e objetivos. Sem achismos — só o que importa pra você. Uma conversa inicial define tudo o que vem depois.</p>
+          <div class="proc-chips">
+            <span class="proc-chip">Formulário</span>
+            <span class="proc-chip">Call</span>
+            <span class="proc-chip">Referências</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proc-row">
+        <div class="proc-line-col">
+          <div class="proc-circle"><span class="proc-circle-num">02</span></div>
+        </div>
+        <div class="proc-content">
+          <span class="proc-tag">// direção criativa</span>
+          <h3 class="proc-title">Conceito &amp; <em>estética</em></h3>
+          <p class="proc-desc">Desenvolvo a direção visual e apresento moodboard com referências antes de qualquer pixel ser criado. Você aprova o caminho antes de percorrê-lo.</p>
+          <div class="proc-chips">
+            <span class="proc-chip">Moodboard</span>
+            <span class="proc-chip">Paleta</span>
+            <span class="proc-chip">Tipografia</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proc-row">
+        <div class="proc-line-col">
+          <div class="proc-circle"><span class="proc-circle-num">03</span></div>
+        </div>
+        <div class="proc-content">
+          <span class="proc-tag">// execução</span>
+          <h3 class="proc-title">Criação com <em>precisão</em></h3>
+          <p class="proc-desc">Executo com atenção absoluta aos detalhes, mantendo você atualizado. Aberto a revisões — o projeto só está pronto quando você estiver satisfeito.</p>
+          <div class="proc-chips">
+            <span class="proc-chip">Revisões incluídas</span>
+            <span class="proc-chip">Updates</span>
+            <span class="proc-chip">Iterações</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="proc-row">
+        <div class="proc-line-col">
+          <div class="proc-circle"><span class="proc-circle-num">04</span></div>
+        </div>
+        <div class="proc-content">
+          <span class="proc-tag">// entrega</span>
+          <h3 class="proc-title">Arquivo final &amp; <em>suporte</em></h3>
+          <p class="proc-desc">Entrego nos formatos corretos para cada plataforma, com qualidade garantida e suporte pós-entrega. Você sai com tudo pronto pra usar.</p>
+          <div class="proc-chips">
+            <span class="proc-chip">PNG · JPG · AI</span>
+            <span class="proc-chip">Alta resolução</span>
+            <span class="proc-chip">Suporte</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════
      BANNERS PRICING
 ════════════════════════════════ -->
 <section class="sec" id="precos">
   <div class="sec-wrap">
-
     <div class="eyebrow reveal">
-      <span class="enum">03</span>
+      <span class="enum">05</span>
       <span class="etag">// banners</span>
     </div>
 
@@ -253,7 +1027,7 @@
       <div class="pcard-plan">
         <span class="plbl">Plano 1</span>
         <h3 class="pname">Origin</h3>
-        <div class="pprice">R$<b data-count="60">0</b><small>,00</small></div>
+        <div class="pprice">R$<b data-count="75">0</b><small>,00</small></div>
         <ul class="pfeats">
           <li>1 arte estática</li>
           <li>Layout técnico</li>
@@ -267,7 +1041,7 @@
         <div class="hot-lbl">Popular</div>
         <span class="plbl">Plano 2</span>
         <h3 class="pname">Infinity</h3>
-        <div class="pprice">R$<b data-count="140">0</b><small>,00</small></div>
+        <div class="pprice">R$<b data-count="130">0</b><small>,00</small></div>
         <ul class="pfeats">
           <li>2 artes estáticas</li>
           <li>Layout totalmente adaptável</li>
@@ -285,9 +1059,8 @@
 ════════════════════════════════ -->
 <section class="sec" id="motion">
   <div class="sec-wrap">
-
     <div class="eyebrow reveal">
-      <span class="enum">04</span>
+      <span class="enum">06</span>
       <span class="etag">// motion</span>
     </div>
 
@@ -336,9 +1109,141 @@
 </section>
 
 <!-- ════════════════════════════════
+     DEPOIMENTOS
+════════════════════════════════ -->
+<section class="sec" id="depoimentos">
+  <div class="sec-wrap">
+    <div class="eyebrow reveal">
+      <span class="enum">07</span>
+      <span class="etag">// depoimentos</span>
+    </div>
+
+    <div class="proj-hdr reveal">
+      <h2 class="sec-title">O que dizem<br><em>os clientes</em></h2>
+    </div>
+    <p class="sec-sub reveal" style="--rd:.05s">Experiências reais de quem já trabalhou comigo.</p>
+
+    <div class="test-grid reveal" style="--rd:.1s">
+
+      <div class="test-card">
+        <div class="test-stars">
+          <div class="test-star"></div><div class="test-star"></div><div class="test-star"></div><div class="test-star"></div><div class="test-star"></div>
+        </div>
+        <p class="test-text">"O Santos entregou um banner que superou todas as expectativas. Atendimento rápido, profissional e resultado incrível. Com certeza voltarei a trabalhar com ele."</p>
+        <div class="test-author">
+          <div class="test-av">LM</div>
+          <div class="test-info">
+            <strong>Lucas Mendes</strong>
+            <span>Empresário · E-commerce</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-card">
+        <div class="test-stars">
+          <div class="test-star"></div><div class="test-star"></div><div class="test-star"></div><div class="test-star"></div><div class="test-star"></div>
+        </div>
+        <p class="test-text">"Trabalho impecável. Minha identidade visual ficou exatamente como eu idealizei — moderna, impactante e coerente com minha marca. Recomendo demais!"</p>
+        <div class="test-author">
+          <div class="test-av">AC</div>
+          <div class="test-info">
+            <strong>Ana Carolina</strong>
+            <span>Designer · Criadora de conteúdo</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="test-card">
+        <div class="test-stars">
+          <div class="test-star"></div><div class="test-star"></div><div class="test-star"></div><div class="test-star"></div><div class="test-star"></div>
+        </div>
+        <p class="test-text">"Pedi um motion para meu canal e recebi algo muito além do esperado. Prazo cumprido, comunicação ótima e qualidade de topo. Vale cada centavo!"</p>
+        <div class="test-author">
+          <div class="test-av">RF</div>
+          <div class="test-info">
+            <strong>Rafael Figueira</strong>
+            <span>Youtuber · Streamer</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════
+     FAQ
+════════════════════════════════ -->
+<section class="sec" id="faq">
+  <div class="sec-wrap">
+    <div class="eyebrow reveal">
+      <span class="enum">08</span>
+      <span class="etag">// dúvidas</span>
+    </div>
+
+    <div class="proj-hdr reveal">
+      <h2 class="sec-title">Perguntas<br><em>Frequentes</em></h2>
+    </div>
+
+    <div class="faq-list reveal" style="--rd:.1s" id="faqList">
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq1">
+          Qual o prazo médio de entrega?
+          <div class="faq-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <div class="faq-a" id="faq1" role="region">
+          <div class="faq-a-inner">Para banners estáticos, o prazo é de 2 a 4 dias úteis após a aprovação do briefing. Projetos maiores como identidade visual completa ou motion graphics podem levar de 5 a 10 dias úteis. Entregas urgentes podem ser negociadas com um adicional de prioridade.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq2">
+          Como funciona o processo de revisão?
+          <div class="faq-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <div class="faq-a" id="faq2" role="region">
+          <div class="faq-a-inner">Cada plano inclui um número específico de revisões. Uma revisão cobre ajustes de texto, cor, posicionamento e pequenas alterações no layout. Mudanças drásticas de conceito após a aprovação inicial podem ser tratadas como novo projeto.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq3">
+          Quais formatos de arquivo são entregues?
+          <div class="faq-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <div class="faq-a" id="faq3" role="region">
+          <div class="faq-a-inner">Para banners: PNG e JPG em alta resolução. Para motion: MP4 em alta qualidade, podendo incluir GIF animado. Para identidade visual: AI, PDF vetorial e PNG com fundo transparente. Formatos adicionais podem ser solicitados sem custo extra.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq4">
+          Como é feito o pagamento?
+          <div class="faq-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <div class="faq-a" id="faq4" role="region">
+          <div class="faq-a-inner">O pagamento é feito via PIX, com 50% de entrada para iniciar o projeto e 50% na entrega do arquivo final aprovado. Para projetos recorrentes ou clientes frequentes, condições especiais podem ser negociadas diretamente pelo WhatsApp.</div>
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" aria-expanded="false" aria-controls="faq5">
+          Você atende fora de Goiás?
+          <div class="faq-icon"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 2v8M2 6h8" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+        </button>
+        <div class="faq-a" id="faq5" role="region">
+          <div class="faq-a-inner">Sim! Todo o processo é 100% online, então atendo clientes de qualquer estado ou país. A comunicação é feita por WhatsApp e o envio dos arquivos por plataformas digitais. Não existe fronteira para criar.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════
      CTA
 ════════════════════════════════ -->
-
 <section class="cta-sec">
   <div class="cta-inner reveal">
     <p class="cta-ey">// vamos trabalhar juntos</p>
@@ -356,11 +1261,125 @@
 <footer class="footer">
   <div class="footer-giant" aria-hidden="true">SATO<span>STUDIOS</span></div>
   <div class="footer-bar">
-    <p>© Sato Motion Studios — v2.05</p>
+    <p>© Sato Motion Studios — v.3.0.5</p>
     <button class="back-top" id="backTop" aria-label="Voltar ao topo">Back to top ↑</button>
   </div>
 </footer>
 
 <script src="script.js"></script>
+
+<script>
+/* ══════════════════════════════════════
+   COLOR PICKER
+══════════════════════════════════════ */
+const CP_PRESETS = [
+  { hex: '#c8ff00', label: 'Verde Lima' },
+  { hex: '#00d4ff', label: 'Ciano' },
+  { hex: '#ff6b35', label: 'Laranja' },
+  { hex: '#a855f7', label: 'Roxo' },
+  { hex: '#ff3366', label: 'Rosa' },
+  { hex: '#00ff9f', label: 'Verde Neon' },
+  { hex: '#ffd700', label: 'Dourado' },
+  { hex: '#38bdf8', label: 'Azul' },
+];
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `${r},${g},${b}`;
+}
+
+function applyAccent(hex) {
+  document.documentElement.style.setProperty('--acc', hex);
+  document.documentElement.style.setProperty('--acc-rgb', hexToRgb(hex));
+  document.getElementById('cpHex').textContent = hex;
+  document.getElementById('cpInput').value = hex;
+  document.querySelectorAll('.cp-swatch').forEach(s => {
+    s.classList.toggle('active', s.dataset.hex.toLowerCase() === hex.toLowerCase());
+  });
+  try { localStorage.setItem('sato_acc', hex); } catch(e) {}
+}
+
+// Build swatches
+const swatchContainer = document.getElementById('cpSwatches');
+const savedAcc = (() => { try { return localStorage.getItem('sato_acc'); } catch(e) { return null; } })();
+const initialAcc = savedAcc || '#c8ff00';
+
+CP_PRESETS.forEach(p => {
+  const el = document.createElement('button');
+  el.className = 'cp-swatch' + (p.hex === initialAcc ? ' active' : '');
+  el.style.background = p.hex;
+  el.dataset.hex = p.hex;
+  el.title = p.label;
+  el.setAttribute('aria-label', 'Cor: ' + p.label);
+  el.addEventListener('click', () => applyAccent(p.hex));
+  swatchContainer.appendChild(el);
+});
+
+document.getElementById('cpInput').addEventListener('input', e => applyAccent(e.target.value));
+
+// Apply saved color on load
+if (savedAcc) applyAccent(savedAcc);
+
+// Toggle panel
+const cpTrigger = document.getElementById('cpTrigger');
+const cpPanel = document.getElementById('cpPanel');
+
+cpTrigger.addEventListener('click', () => {
+  const isOpen = cpPanel.classList.toggle('open');
+  cpTrigger.setAttribute('aria-expanded', isOpen);
+  cpPanel.setAttribute('aria-hidden', !isOpen);
+});
+
+document.addEventListener('click', e => {
+  if (!cpTrigger.contains(e.target) && !cpPanel.contains(e.target)) {
+    cpPanel.classList.remove('open');
+    cpTrigger.setAttribute('aria-expanded', 'false');
+    cpPanel.setAttribute('aria-hidden', 'true');
+  }
+});
+
+/* ══════════════════════════════════════
+   TOOLS BAR ANIMATION
+══════════════════════════════════════ */
+const toolsObs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.querySelectorAll('.tool-bar-fill').forEach(bar => {
+        bar.style.width = bar.dataset.width + '%';
+      });
+      toolsObs.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.2 });
+
+const toolsGrid = document.getElementById('toolsGrid');
+if (toolsGrid) toolsObs.observe(toolsGrid);
+
+/* ══════════════════════════════════════
+   FAQ ACCORDION
+══════════════════════════════════════ */
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+    const targetId = btn.getAttribute('aria-controls');
+    const answer = document.getElementById(targetId);
+
+    // Close all
+    document.querySelectorAll('.faq-q').forEach(b => {
+      b.setAttribute('aria-expanded', 'false');
+      document.getElementById(b.getAttribute('aria-controls')).classList.remove('open');
+    });
+
+    // Open clicked (if was closed)
+    if (!isOpen) {
+      btn.setAttribute('aria-expanded', 'true');
+      answer.classList.add('open');
+    }
+  });
+});
+</script>
+
 </body>
 </html>
